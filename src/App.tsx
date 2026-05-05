@@ -47,6 +47,8 @@ import {
   FileText,
   Play,
   Video,
+  Music,
+  Check,
   LucideIcon
 } from 'lucide-react';
 import { curriculum } from './data/curriculum';
@@ -162,26 +164,48 @@ export default function App() {
   const [isFinished, setIsFinished] = useState(false);
   const [isViewingContent, setIsViewingContent] = useState(false);
   const [showIntro, setShowIntro] = useState(true);
+  const [justCompletedLessonId, setJustCompletedLessonId] = useState<string | null>(null);
+  
+  const [selectedMusic, setSelectedMusic] = useState<'funny' | 'adventure' | 'calm'>('funny');
+  const [showMusicMenu, setShowMusicMenu] = useState(false);
 
   const schoolAmbientRef = useRef<HTMLAudioElement | null>(null);
   const gameAmbientRef = useRef<HTMLAudioElement | null>(null);
 
+  const musicTracks = {
+    funny: 'https://assets.mixkit.co/music/preview/mixkit-funny-and-playful-6.mp3',
+    adventure: 'https://assets.mixkit.co/music/preview/mixkit-adventure-unleashed-1218.mp3',
+    calm: 'https://assets.mixkit.co/music/preview/mixkit-calm-and-peaceful-1100.mp3'
+  };
+
   useEffect(() => {
     // School playground/hallway vibe
-    schoolAmbientRef.current = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-small-group-of-kids-talking-and-laughing-280.mp3');
-    schoolAmbientRef.current.loop = true;
-    schoolAmbientRef.current.volume = 0.08;
+    if (!schoolAmbientRef.current) {
+      schoolAmbientRef.current = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-small-group-of-kids-talking-and-laughing-280.mp3');
+      schoolAmbientRef.current.loop = true;
+      schoolAmbientRef.current.volume = 0.08;
+    }
 
-    // Joyful educational vibe
-    gameAmbientRef.current = new Audio('https://assets.mixkit.co/music/preview/mixkit-funny-and-playful-6.mp3');
+    // Update game audio track when selectedMusic changes
+    const wasPlaying = gameAmbientRef.current && !gameAmbientRef.current.paused && !isMuted;
+    
+    if (gameAmbientRef.current) {
+      gameAmbientRef.current.pause();
+    }
+    
+    gameAmbientRef.current = new Audio(musicTracks[selectedMusic]);
     gameAmbientRef.current.loop = true;
     gameAmbientRef.current.volume = 0.05;
+
+    if (wasPlaying) {
+      gameAmbientRef.current.play().catch(() => {});
+    }
 
     return () => {
       schoolAmbientRef.current?.pause();
       gameAmbientRef.current?.pause();
     };
-  }, []);
+  }, [selectedMusic]); // Re-run when selected music changes
 
   useEffect(() => {
     if (isMuted) {
@@ -302,6 +326,7 @@ export default function App() {
     setSelectedLesson(null);
     setCurrentExerciseIndex(0);
     setIsFinished(false);
+    setJustCompletedLessonId(null);
     setFeedback(null);
   };
 
@@ -334,6 +359,7 @@ export default function App() {
         setCurrentExerciseIndex(i => i + 1);
       } else {
         setIsFinished(true);
+        setJustCompletedLessonId(selectedLesson.id);
         checkThemeCompletion(selectedLesson.id);
       }
     }, 1200);
@@ -349,6 +375,51 @@ export default function App() {
           </div>
           
           <div className="flex items-center gap-4">
+            <div className="relative">
+              <button 
+                onClick={() => setShowMusicMenu(!showMusicMenu)}
+                className="w-10 h-10 rounded-xl bg-white border-2 border-slate-100 text-slate-400 hover:border-sky-500 hover:text-sky-600 flex items-center justify-center transition-all"
+                title="Changer la musique"
+              >
+                <Music size={18} />
+              </button>
+              
+              <AnimatePresence>
+                {showMusicMenu && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    className="absolute right-0 lg:left-0 lg:right-auto md:origin-top-left top-14 w-48 bg-white border-2 border-slate-100 rounded-2xl shadow-xl overflow-hidden z-50 p-2"
+                  >
+                    <div className="px-3 py-2 text-xs font-black text-slate-400 uppercase tracking-wider mb-1">
+                      Ambiance Musicale
+                    </div>
+                    {[
+                      { id: 'funny', label: 'Ludique 🎮' },
+                      { id: 'adventure', label: 'Aventure 🗺️' },
+                      { id: 'calm', label: 'Calme 🧘' }
+                    ].map(track => (
+                      <button
+                        key={track.id}
+                        onClick={() => {
+                          setSelectedMusic(track.id as 'funny' | 'adventure' | 'calm');
+                          setShowMusicMenu(false);
+                          if (isMuted) setIsMuted(false);
+                        }}
+                        className={`w-full text-left px-4 py-3 rounded-xl font-bold text-sm flex items-center justify-between transition-colors ${
+                          selectedMusic === track.id ? 'bg-sky-50 text-sky-600' : 'text-slate-600 hover:bg-slate-50'
+                        }`}
+                      >
+                        {track.label}
+                        {selectedMusic === track.id && <Check size={16} />}
+                      </button>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
             <button 
               onClick={() => setIsMuted(!isMuted)}
               className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all border-2 ${
@@ -472,21 +543,7 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Simple Video Section */}
-                <div className="relative group">
-                  <div className="absolute -inset-1 bg-gradient-to-r from-sky-500 to-amber-400 rounded-[3rem] blur opacity-25 group-hover:opacity-40 transition duration-1000"></div>
-                  <div className="relative aspect-video w-full rounded-[2.8rem] overflow-hidden shadow-2xl bg-slate-900 border-8 border-white">
-                    <iframe
-                      width="100%"
-                      height="100%"
-                      src="https://www.youtube.com/embed/fCgIe2kL6Uo?autoplay=0&rel=0&modestbranding=1"
-                      title="YOJA Introduction Video"
-                      frameBorder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    ></iframe>
-                  </div>
-                </div>
+
 
                 {/* Action */}
                 <div className="pt-4">
@@ -897,6 +954,47 @@ export default function App() {
                             Complété
                           </div>
                         )}
+                        
+                        {/* Celebration Animation overlay */}
+                        {justCompletedLessonId === lesson.id && (
+                          <motion.div 
+                            initial={{ scale: 0.8, opacity: 0 }}
+                            animate={{ scale: [1, 1.05, 1], opacity: [1, 1, 0] }}
+                            transition={{ duration: 2, times: [0, 0.2, 1] }}
+                            onAnimationComplete={() => setJustCompletedLessonId(null)}
+                            className="absolute -inset-2 z-50 pointer-events-none flex items-center justify-center"
+                          >
+                            <div className="absolute inset-0 bg-emerald-400 rounded-[2.5rem] opacity-20 mix-blend-overlay"></div>
+                            
+                            <motion.div
+                              animate={{ 
+                                y: [10, -60], 
+                                scale: [0, 1.5, 0],
+                                rotate: [0, 180]
+                              }}
+                              transition={{ duration: 1.5, ease: "easeOut" }}
+                              className="absolute top-0 text-4xl drop-shadow-lg"
+                            >🌟</motion.div>
+                            <motion.div
+                              animate={{ 
+                                x: [10, -50], y: [10, -30],
+                                scale: [0, 1.2, 0],
+                                rotate: [0, -90]
+                              }}
+                              transition={{ duration: 1.5, ease: "easeOut", delay: 0.2 }}
+                              className="absolute left-6 text-3xl drop-shadow-lg"
+                            >✨</motion.div>
+                            <motion.div
+                              animate={{ 
+                                x: [-10, 50], y: [10, -30],
+                                scale: [0, 1.4, 0],
+                                rotate: [0, 90]
+                              }}
+                              transition={{ duration: 1.5, ease: "easeOut", delay: 0.1 }}
+                              className="absolute right-6 text-4xl drop-shadow-lg"
+                            >🎉</motion.div>
+                          </motion.div>
+                        )}
                       </motion.button>
                     );
                   })}
@@ -988,14 +1086,21 @@ export default function App() {
                       <XCircle size={24} />
                     </button>
                     <div className="flex-1">
-                      <div className="bg-white p-2 rounded-2xl border-2 border-slate-100">
-                        <div className="h-4 bg-slate-50 rounded-xl overflow-hidden relative">
-                          <motion.div 
-                            className="absolute inset-y-0 left-0 bg-gradient-to-r from-sky-500 to-sky-400 rounded-xl shadow-sm" 
-                            initial={{ width: 0 }}
-                            animate={{ width: `${(currentExerciseIndex / selectedLesson.exercises.length) * 100}%` }}
-                            transition={{ type: "spring", bounce: 0, duration: 0.5 }}
-                          />
+                      <div className="bg-white p-2 md:p-3 rounded-2xl border-2 border-slate-100 shadow-sm">
+                        <div className="flex gap-1.5 md:gap-2">
+                          {selectedLesson.exercises.map((_, i) => {
+                            const isCompleted = i < currentExerciseIndex || (i === currentExerciseIndex && feedback?.type === 'success');
+                            return (
+                              <div key={i} className="flex-1 h-3 md:h-4 bg-slate-100 rounded-full overflow-hidden relative">
+                                <motion.div 
+                                  className="absolute inset-y-0 left-0 bg-gradient-to-r from-emerald-400 to-emerald-500"
+                                  initial={{ width: isCompleted ? '100%' : '0%' }}
+                                  animate={{ width: isCompleted ? '100%' : '0%' }}
+                                  transition={{ duration: 0.3 }}
+                                />
+                              </div>
+                            );
+                          })}
                         </div>
                       </div>
                     </div>
@@ -1121,36 +1226,124 @@ export default function App() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <motion.button 
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={handleShare}
-                      className="bg-emerald-50 text-emerald-600 py-5 rounded-[2rem] font-black text-xl flex items-center justify-center gap-3 border-2 border-emerald-100"
-                    >
-                      <Share2 size={24} /> Partager
-                    </motion.button>
-                    <motion.button 
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => {
-                        setSelectedLesson(null);
-                        setIsFinished(false);
-                        setCurrentExerciseIndex(0);
-                      }}
-                      className="bg-sky-600 text-white py-5 rounded-[2rem] font-black text-xl shadow-xl shadow-sky-500/30 hover:shadow-2xl hover:shadow-sky-500/40 transition-all"
-                    >
-                      Continuer →
-                    </motion.button>
-                    <motion.button 
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={resetToHome}
-                      className="bg-slate-900 text-white py-5 rounded-[2rem] font-black text-xl flex items-center justify-center gap-3"
-                    >
-                      <Home size={24} /> Accueil
-                    </motion.button>
-                  </div>
+                  {(() => {
+                    if (!selectedTheme || !currentGradeData) return null;
+                    
+                    const lessonIndex = selectedTheme.lessons.findIndex(l => l.id === selectedLesson?.id);
+                    const isLastLesson = lessonIndex === selectedTheme.lessons.length - 1;
+                    
+                    const themeIndex = currentGradeData.themes.findIndex(t => t.id === selectedTheme.id);
+                    const isLastTheme = themeIndex === currentGradeData.themes.length - 1;
+
+                    if (!isLastLesson) {
+                      const nextLesson = selectedTheme.lessons[lessonIndex + 1];
+                      return (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <motion.button 
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={handleShare}
+                            className="bg-emerald-50 text-emerald-600 py-5 rounded-[2rem] font-black text-xl flex items-center justify-center gap-3 border-2 border-emerald-100"
+                          >
+                            <Share2 size={24} /> Partager
+                          </motion.button>
+                          <motion.button 
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => {
+                              setSelectedLesson(nextLesson);
+                              setIsFinished(false);
+                              setCurrentExerciseIndex(0);
+                              setSessionScore(0);
+                              setIsViewingContent(!!(nextLesson.storyContent || nextLesson.videoUrl));
+                            }}
+                            className="bg-sky-600 text-white py-5 rounded-[2rem] font-black text-xl shadow-xl shadow-sky-500/30 hover:shadow-2xl hover:shadow-sky-500/40 transition-all flex items-center justify-center gap-2"
+                          >
+                            Leçon suivante <ChevronRight size={24} />
+                          </motion.button>
+                          <motion.button 
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => {
+                              setSelectedLesson(null);
+                              setIsFinished(false);
+                              setCurrentExerciseIndex(0);
+                            }}
+                            className="bg-slate-900 text-white py-5 rounded-[2rem] font-black text-xl flex items-center justify-center gap-3"
+                          >
+                             Retour au module
+                          </motion.button>
+                        </div>
+                      );
+                    } else if (!isLastTheme) {
+                      const nextTheme = currentGradeData.themes[themeIndex + 1];
+                      return (
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <motion.button 
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={handleShare}
+                            className="bg-emerald-50 text-emerald-600 py-5 rounded-[2rem] font-black text-xl flex items-center justify-center gap-3 border-2 border-emerald-100"
+                          >
+                            <Share2 size={24} /> Partager
+                          </motion.button>
+                          <motion.button 
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => {
+                              setSelectedTheme(nextTheme);
+                              setSelectedLesson(null);
+                              setIsFinished(false);
+                              setCurrentExerciseIndex(0);
+                              setSessionScore(0);
+                            }}
+                            className="bg-amber-500 text-white py-5 rounded-[2rem] font-black text-xl shadow-xl shadow-amber-500/30 hover:shadow-2xl hover:shadow-amber-500/40 transition-all flex items-center justify-center gap-2"
+                          >
+                            Module suivant <ChevronRight size={24} />
+                          </motion.button>
+                          <motion.button 
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => {
+                              setSelectedLesson(null);
+                              setSelectedTheme(null);
+                              setIsFinished(false);
+                              setCurrentExerciseIndex(0);
+                            }}
+                            className="bg-slate-900 text-white py-5 rounded-[2rem] font-black text-xl flex items-center justify-center gap-3"
+                          >
+                             Tous les modules
+                          </motion.button>
+                        </div>
+                      );
+                    } else {
+                      return (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8">
+                          <motion.button 
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={handleShare}
+                            className="bg-emerald-50 text-emerald-600 py-5 rounded-[2rem] font-black text-xl flex items-center justify-center gap-3 border-2 border-emerald-100"
+                          >
+                            <Share2 size={24} /> Partager
+                          </motion.button>
+                          <motion.button 
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() => {
+                              setSelectedLesson(null);
+                              setSelectedTheme(null);
+                              setIsFinished(false);
+                              setCurrentExerciseIndex(0);
+                            }}
+                            className="bg-sky-600 text-white py-5 rounded-[2rem] font-black text-xl shadow-xl shadow-sky-500/30 hover:shadow-2xl hover:shadow-sky-500/40 transition-all flex items-center justify-center gap-2"
+                          >
+                            Tous les modules
+                          </motion.button>
+                        </div>
+                      );
+                    }
+                  })()}
                 </motion.div>
               )}
             </motion.div>

@@ -147,7 +147,7 @@ export const curriculum: GradeData[] = [
             title: 'La Politesse en Chanson',
             description: 'Apprendre à dire "Bonjour" et "Merci".',
             icon: 'Video',
-            videoUrl: 'https://www.youtube.com/embed/fCgIe2kL6Uo',
+            videoUrl: 'https://www.youtube.com/embed/aqz-KE-bpKQ',
             exercises: [
               {
                 id: '1a-v1-e1',

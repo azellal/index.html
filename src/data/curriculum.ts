@@ -1083,35 +1083,157 @@ export const curriculum: GradeData[] = [
       },
       {
         id: '6a-gram',
-        title: 'Grammaire : La Phrase Complexe',
+        title: 'Grammaire : COD, COI et Pronoms',
         lessons: [
           {
             id: '6a-g1',
-            title: 'Cause et Conséquence',
-            description: 'Utiliser "parce que", "car", "donc".',
-            icon: 'Link',
+            title: 'Mission COD : Le Complément d\'Objet Direct',
+            description: 'Apprends à repérer le COD sans utiliser de miroir magique, en posant les questions "Qui ?" ou "Quoi ?".',
+            icon: 'Target',
+            storyContent: {
+              text: 'Dans la forêt des mots, le verbe est roi, mais il a toujours besoin de son aide de camp : le Complément d\'Objet Direct (COD). Pour trouver ce fidèle compagnon, le détective pose toujours deux questions magiques juste après le verbe : "Qui ?" ou "Quoi ?". Par exemple : "Le chevalier combat (quoi ?) le dragon." Le dragon est le COD !',
+              moral: 'Le COD complète le verbe directement, sans aucun petit mot (préposition) entre eux !',
+              image: 'https://images.unsplash.com/photo-1598256989445-6a5fae8fa6ab?w=800&q=80'
+            },
             exercises: [
               {
                 id: '6a-g1-e1',
                 type: 'multiple-choice',
-                question: 'Il est absent ___ il est malade.',
-                options: ['donc', 'parce qu\'', 'mais'],
-                correctAnswer: 'parce qu\''
+                question: 'Dans la phrase "Karim appelle ses amis", trouve le COD en posant la question "Karim appelle qui ?".',
+                options: ['Karim', 'appelle', 'ses amis'],
+                correctAnswer: 'ses amis'
               },
               {
-                id: '6a-g1-imposter',
+                id: '6a-g1-e2',
+                type: 'multiple-choice',
+                question: 'Dans "Je vois ma voisine", quel est le COD ?',
+                options: ['Je', 'vois', 'ma voisine'],
+                correctAnswer: 'ma voisine'
+              },
+              {
+                id: '6a-g1-e3',
+                type: 'multiple-choice',
+                question: 'Lequel de ces groupes de mots est un COD ? "Le chat boit du lait."',
+                options: ['Le chat', 'boit', 'du lait'],
+                correctAnswer: 'du lait'
+              },
+              {
+                id: '6a-g1-cw',
+                type: 'crossword',
+                question: 'Mots croisés : trouve les COD !',
+                correctAnswer: 'BRAVO',
+                clues: [
+                  { word: 'AMIS', clue: 'Karim appelle ses...', orientation: 'across', row: 0, col: 0 },
+                  { word: 'LAIT', clue: 'Le chat boit du...', orientation: 'down', row: 0, col: 2 },
+                  { word: 'VOISINE', clue: 'Je vois ma...', orientation: 'across', row: 3, col: 0 }
+                ]
+              }
+            ]
+          },
+          {
+            id: '6a-g2',
+            title: 'Mission COI : Le Complément d\'Objet Indirect',
+            description: 'Découvre le COI, le complément qui se cache toujours derrière une préposition comme "à" ou "de".',
+            icon: 'MessageCircle',
+            storyContent: {
+              text: 'Parfois, le verbe veut parler à quelqu\'un de spécial, mais il y a un garde à l\'entrée : c\'est la préposition ("à", "de", "pour"). Quand cette petite barrière est là, l\'aide de camp devient un Complément d\'Objet Indirect (COI) ! On le trouve en posant la question : "À qui ?", "À quoi ?", "De qui ?", "De quoi ?". Exemple : "Je parle (à qui ?) à mon voisin."',
+              moral: 'Le COI est "indirect" parce qu\'il est séparé du verbe par une préposition !',
+              image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=800&q=80'
+            },
+            exercises: [
+              {
+                id: '6a-g2-e1',
+                type: 'multiple-choice',
+                question: 'Dans "Je parle à mon ami", trouve le COI en posant la question "Je parle à qui ?".',
+                options: ['Je', 'parle', 'à mon ami'],
+                correctAnswer: 'à mon ami'
+              },
+              {
+                id: '6a-g2-e2',
+                type: 'multiple-choice',
+                question: 'Dans "Il se souvient de ses vacances", quel est le COI ?',
+                options: ['Il', 'de ses vacances', 'se souvient'],
+                correctAnswer: 'de ses vacances'
+              },
+              {
+                id: '6a-g2-imposter',
                 type: 'imposter',
-                question: 'Lequel n\'indique pas la cause ?',
-                options: ['Car', 'Parce que', 'Donc', 'Puisque'],
-                correctAnswer: 'Donc'
+                question: 'Lequel de ces compléments est DIRECT (COD) et va donc chasser les COI ?',
+                options: ['à sa mère', 'de son frère', 'une lettre', 'aux enfants'],
+                correctAnswer: 'une lettre'
+              }
+            ]
+          },
+          {
+            id: '6a-g3',
+            title: 'Mode Expert : Les Pronoms COD',
+            description: 'Transforme les phrases en remplaçant le COD par un pronom (le, la, l\', les) pour éviter les répétitions !',
+            icon: 'Zap',
+            exercises: [
+              {
+                id: '6a-g3-e1',
+                type: 'multiple-choice',
+                question: 'Remplace le COD : "Amine va voir son ami." -> "Amine va ___ voir."',
+                options: ['le', 'la', 'les'],
+                correctAnswer: 'le'
               },
               {
-                id: '6a-g1-listening',
+                id: '6a-g3-e2',
+                type: 'multiple-choice',
+                question: 'Remplace le COD : "Tu vas voir Samira." -> "Tu vas ___ voir."',
+                options: ['lui', 'la', 'l\''],
+                correctAnswer: 'la'
+              },
+              {
+                id: '6a-g3-e3',
+                type: 'multiple-choice',
+                question: 'Remplace le COD : "Karim appelle ses amis." -> "Karim ___ appelle."',
+                options: ['le', 'leur', 'les'],
+                correctAnswer: 'les'
+              },
+              {
+                id: '6a-g3-listening',
                 type: 'listening',
-                audioPrompt: 'Il est fatigué car il a trop travaillé',
-                question: 'Quel mot exprime la cause dans cette phrase ?',
-                options: ['trop', 'car', 'fatigué'],
-                correctAnswer: 'car'
+                audioPrompt: 'Réda l\'appelle',
+                question: 'Quel est le pronom utilisé pour "son cousin" dans la phrase "Réda appelle son cousin" ?',
+                options: ['le', 'la', 'l\''],
+                correctAnswer: 'l\''
+              }
+            ]
+          },
+          {
+            id: '6a-g4',
+            title: 'Le Grand Quiz des Compléments',
+            description: 'Prouve que tu es le maître absolu des COD et COI !',
+            icon: 'Trophy',
+            exercises: [
+              {
+                id: '6a-g4-e1',
+                type: 'multiple-choice',
+                question: '"J\'écris à ma grand-mère". Que représente "à ma grand-mère" ?',
+                options: ['COD', 'COI', 'Sujet'],
+                correctAnswer: 'COI'
+              },
+              {
+                id: '6a-g4-e2',
+                type: 'multiple-choice',
+                question: '"Nous mangeons des pommes". Que représente "des pommes" ?',
+                options: ['COD', 'COI', 'Verbe'],
+                correctAnswer: 'COD'
+              },
+              {
+                id: '6a-g4-e3',
+                type: 'multiple-choice',
+                question: 'Choisis la bonne phrase avec le pronom COD pour "Je vois ma voisine" :',
+                options: ['Je lui vois', 'Je la vois', 'Je le vois'],
+                correctAnswer: 'Je la vois'
+              },
+              {
+                id: '6a-g4-e4',
+                type: 'multiple-choice',
+                question: 'Choisis la bonne phrase pour "Il téléphone à ses parents" :',
+                options: ['Il les téléphone', 'Il lui téléphone', 'Il leur téléphone'],
+                correctAnswer: 'Il leur téléphone'
               }
             ]
           }
